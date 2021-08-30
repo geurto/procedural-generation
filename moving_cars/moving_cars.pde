@@ -23,9 +23,20 @@ class Car {
     this.speed = randomGaussian() * 40/(this.car_length * this.car_width);
     
     // Color
-    float hue = 60 + 5*randomGaussian() + 0.0001*random(0, 100)*(this.ypos - height/2)*(this.ypos - height/2);
-    float sat = 100;
-    float brightness = 90;
+    //float hue = 60 + 5*randomGaussian() + 0.0001*random(0, 100)*(this.ypos - height/2)*(this.ypos - height/2);
+    //float sat = 100;
+    //float brightness = 90;
+    float r = random(0, 1);
+    float hue, sat, brightness;
+    if (size_factor < 0.5) {
+      if (r > 0.9) {hue = 0; sat = 80; brightness = 80;}  // red
+      else if (r > 0.5) {hue = 54; sat = 90; brightness = 95;}  // yellow
+      else {hue = 0; sat = 0; brightness = 100;} // white
+    } else {
+      if (r > 0.85) {hue = 120; sat = 50; brightness = 80;}  // green
+      else if (r > 0.55) {hue = 220; sat = 50; brightness = 55;}  // blue
+      else {hue = 0; sat = 0; brightness = 100;}  // white
+    }
     this.c = color(hue, sat, brightness, 1.0);
     
     // Determine direction of movement
@@ -50,7 +61,7 @@ class Car {
     this.xpos = this.xpos + this.speed * this.speed_direction;
     if (this.xpos > width && this.speed_direction == 1) {
       this.xpos = 0;
-    } else if (this.xpos < 0 && this.speed_direction == -1) {
+    } else if (this.xpos < -this.car_length && this.speed_direction == -1) {
       this.xpos = width;
     }
   }
