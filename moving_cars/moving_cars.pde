@@ -12,14 +12,21 @@ class Car {
   boolean horizontal;
   
   Car() {
+    // Size
     this.car_length = random(10, 50);
-    this.car_width = this.car_length * random(0.2, 0.5);
-    float size_factor = (this.car_length*this.car_width) / (50 * 25);  // size divided by max_size
-    float hue = 360*size_factor + 5*randomGaussian();
-    this.c = color(hue, random(50), random(40, 90), 1.0);
+    this.car_width = this.car_length * random(0.2, 0.35);
+    float size_factor = (this.car_length*this.car_width) / (50 * 17.5);  // size divided by max_size
+    
+    // Position and speed
     this.xpos = width/2 + (width/8) * randomGaussian();
-    this.ypos = height/2 + (height/8) * randomGaussian();
+    this.ypos = height/2 + (height/6) * randomGaussian();
     this.speed = randomGaussian() * 40/(this.car_length * this.car_width);
+    
+    // Color
+    float hue = 60 + 5*randomGaussian() + 0.0001*random(0, 100)*(this.ypos - height/2)*(this.ypos - height/2);
+    float sat = 100;
+    float brightness = 90;
+    this.c = color(hue, sat, brightness, 1.0);
     
     // Determine direction of movement
     float f = random(0, 1);
@@ -50,7 +57,7 @@ class Car {
 
   void display() {
     fill(c);
-    noStroke();
+    //noStroke();
     rect(this.xpos,this.ypos,this.car_length,this.car_width);
     
     // Draw car on other side when it falls off the map
