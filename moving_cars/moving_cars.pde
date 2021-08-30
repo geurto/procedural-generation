@@ -1,4 +1,3 @@
-color c = color(0);
 Car[] cars;
 int numCars = 1000;
 
@@ -15,8 +14,9 @@ class Car {
   Car() {
     this.car_length = random(10, 50);
     this.car_width = this.car_length * random(0.2, 0.5);
-    float col = random(0, 255);
-    this.c = color(col, col, col);
+    float size_factor = (this.car_length*this.car_width) / (50 * 25);  // size divided by max_size
+    float hue = 360*size_factor + 5*randomGaussian();
+    this.c = color(hue, random(50), random(40, 90), 1.0);
     this.xpos = width/2 + (width/8) * randomGaussian();
     this.ypos = height/2 + (height/8) * randomGaussian();
     this.speed = randomGaussian() * 40/(this.car_length * this.car_width);
@@ -36,7 +36,7 @@ class Car {
       this.speed_direction = -1;
       this.horizontal = false;
     }
-    println("Set up new car width whiteness " + col + ", position " + this.xpos + this.ypos + ", speed " + this.speed);
+    println("Set up new car with hue " + hue + ", position " + this.xpos + this.ypos + ", speed " + this.speed);
   }
 
   void move() {
@@ -53,8 +53,8 @@ class Car {
     noStroke();
     rect(this.xpos,this.ypos,this.car_length,this.car_width);
     
+    // Draw car on other side when it falls off the map
     if (this.xpos > width - this.car_length && this.speed_direction == 1) {
-      // Draw car partially on other side as well
       rect(0, this.ypos, this.car_length-(width-this.xpos), this.car_width);
     } else if (this.xpos < this.car_length && this.speed_direction == -1) {
       rect(width-(this.xpos-this.car_length), this.ypos, this.car_length-this.xpos, this.car_width);
@@ -65,6 +65,7 @@ class Car {
 
 void setup() {
   size(1600, 400);
+  colorMode(HSB, 360, 100, 100, 1.0);
   
   cars = new Car[numCars];
   for (int i = 0; i < cars.length; i++) {
@@ -73,7 +74,7 @@ void setup() {
 }
 
 void draw() {
-  background(80, 120, 220);
+  background(210, 50, 100, 1.0);
   for (int i = 0; i < cars.length; i++) {
     cars[i].move();
     cars[i].display();
