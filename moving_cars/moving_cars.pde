@@ -19,7 +19,7 @@ class Car {
     this.car_width = this.car_length * random(0.2, 0.5);
     this.xpos = random(0, width);
     this.ypos = random(0, height);
-    this.speed = random(0, 5);
+    this.speed = random(0.5, 1.5)/(this.car_length * this.car_width);
     this.horizontal = true;
     float f = random(0, 10);
     if (f > 5) {
