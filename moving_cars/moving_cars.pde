@@ -1,30 +1,35 @@
 color c = color(0);
-float x = 0;
-float y = 100;
-float speed = 1;
-float car_length = 30;
-float car_width = 10;
 Car[] cars;
-int numCars = 5;
+int numCars = 50;
 
 class Car {
   color c;
+  float car_length;
+  float car_width;
   float xpos;
   float ypos;
   float speed;
   boolean horizontal;
   boolean forwards;
   
-  Car() {};
-  Car(color C, float XPOS, float YPOS,float SPEED, boolean HORIZONTAL, boolean FORWARDS) {
-    c = C;
-    xpos = XPOS;
-    ypos = YPOS;
-    speed = SPEED;
-    horizontal = HORIZONTAL;
-    forwards = FORWARDS;
+  Car() {
+    float col = random(0, 255);
+    this.c = color(col, col, col);
+    this.car_length = random(10, 50);
+    this.car_width = this.car_length * random(0.2, 0.5);
+    this.xpos = random(0, width);
+    this.ypos = random(0, height);
+    this.speed = random(0, 5);
+    this.horizontal = true;
+    float f = random(0, 10);
+    if (f > 5) {
+      this.forwards = true;
+    } else {
+      this.forwards = false;
+    }
+    println("Set up new car width whiteness " + col + ", position " + this.xpos + this.ypos + ", speed " + this.speed);
   }
-  
+
   void move() {
     this.xpos = this.xpos + speed;
     if (this.xpos > width) {
