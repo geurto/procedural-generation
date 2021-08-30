@@ -1,8 +1,11 @@
+// Color pallette: https://applecolors.com/palette/21064-neon-at-night-palette
 Car[] cars;
-int numCars = 1000;
+int numCars = 1500;
 
 class Car {
-  color c;
+  float hue;
+  float saturation;
+  float brightness;
   float car_length;
   float car_width;
   float xpos;
@@ -15,7 +18,7 @@ class Car {
 
   void setParameters(boolean first_time) {
     // Size
-    this.car_length = random(10, 50);
+    this.car_length = random(width/160, width/32);
     this.car_width = this.car_length * random(0.2, 0.35);
     float size_factor = (this.car_length*this.car_width) / (50 * 17.5);  // size divided by max_size
     
@@ -44,7 +47,7 @@ class Car {
         this.ypos = height/2 + (height/6) * randomGaussian();
       }
       else {
-        this.xpos = width/2 + (width/12) * randomGaussian();
+        this.xpos = width/2 + (width/6) * randomGaussian();
         this.ypos = height/2 + (height/12) * randomGaussian();
       }
     } else {
@@ -54,42 +57,38 @@ class Car {
       else {this.ypos = height + this.car_length;}
     }    
     
-    this.speed = randomGaussian() * 40/(this.car_length * this.car_width);
+    this.speed = 0.1 + randomGaussian() * 40/(this.car_length * this.car_width);
     
     // Color
-    //float hue = 60 + 5*randomGaussian() + 0.0001*random(0, 100)*(this.ypos - height/2)*(this.ypos - height/2);
-    //float sat = 100;
-    //float brightness = 90;
     float r = random(0, 1);
-    float hue, sat, brightness;
     if (size_factor < 0.5) {
       // Small cars
-      if (r > 0.9) {hue = 0; sat = 80; brightness = 80;}  // red
-      else if (r > 0.5) {hue = 54; sat = 90; brightness = 95;}  // yellow
-      else {hue = 0; sat = 0; brightness = 100;} // white
+      if (r > 0.8) {this.hue = 54; this.saturation = 92; this.brightness = 95;}  // yellow
+      else if (r > 0.5) {this.hue = 327.57; this.saturation = 92; this.brightness = 100;}  // light pink
+      else {this.hue = 158.94; this.saturation = 42; this.brightness = 88;} // soft green
     } else {
       // Big cars
-      if (r > 0.80) {hue = 120; sat = 50; brightness = 80;}  // green
-      else if (r > 0.40) {hue = 220; sat = 50; brightness = 55;}  // blue
-      else {hue = 0; sat = 0; brightness = 100;}  // white
+      if (r > 0.60) {this.hue = 177.53; this.saturation = 100; this.brightness = 76;}  // green
+      else if (r > 0.20) {this.hue = 261.57; this.saturation = 77; this.brightness = 78;}  // blue
+      else {this.hue = 0; this.saturation = 0; this.brightness = 100;}  // white
     }
-    this.c = color(hue, sat, brightness, 1.0);
     
-    println("Set up new car with hue " + hue + ", position " + this.xpos + this.ypos + ", speed " + this.speed);
   }
   
   void move() {
+    float dpos = this.speed * this.speed_direction + 0.001 * dist(this.xpos, this.ypos, width/2, height/2);
+    
     if (this.horizontal) {
-      this.xpos = this.xpos + this.speed * this.speed_direction;
+      this.xpos = this.xpos + dpos;
       if (this.xpos > width+this.car_length && this.speed_direction == 1) {
-        this.xpos = 0;
+        this.xpos = -this.car_length;
       } else if (this.xpos < -this.car_length && this.speed_direction == -1) {
         this.xpos = width;
       }
     } else {
-      this.ypos = this.ypos + this.speed * this.speed_direction;
+      this.ypos = this.ypos + dpos;
       if (this.ypos > height+this.car_length && this.speed_direction == 1) {
-        this.ypos = 0;
+        this.ypos = -this.car_length;
       } else if (this.ypos < -this.car_length && this.speed_direction == -1) {
         this.ypos = height;
       }
@@ -97,15 +96,32 @@ class Car {
   }
 
   void display() {
-    fill(c);
+    this.fillDistortedColor();
     if (this.horizontal) {rect(this.xpos,this.ypos,this.car_length,this.car_width);} 
     else {rect(this.xpos, this.ypos, this.car_width, this.car_length);}
+  }
+  
+  void fillDistortedColor() {
+    double theta = generateNoise(this.xpos, this.ypos) * Math.PI * 3;
+    double hue_noise = Math.cos(theta)*10 + Math.cos(frameCount/100)*10;
+    double hue_distorted = this.hue + hue_noise;
+    color c = color((float)hue_distorted, this.saturation, this.brightness);
+    fill(c);
+  }
+  
+  double generateNoise(float x, float y) {
+    float z = frameCount / 400;
+    float z2 = frameCount / 2000;
+    float noiseX = 0.01 * (dist(this.xpos, this.ypos, width/2, height/2) + z2); 
+    float noiseY = 0.01 * (dist(this.xpos, this.ypos, width/2, height/2) + z2); 
+    return noise(noiseX, noiseY, z);
   }
 }  // end Car class
 
 
 void setup() {
-  size(1600, 400);
+  //size(1600, 800);
+  fullScreen();
   colorMode(HSB, 360, 100, 100, 1.0);
   
   cars = new Car[numCars];
@@ -115,7 +131,7 @@ void setup() {
 }
 
 void draw() {
-  background(210, 50, 100, 1.0);
+  background(253.17, 100, 32, 1.00);
   for (int i = 0; i < cars.length; i++) {
     cars[i].move();
     cars[i].display();
