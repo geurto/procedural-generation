@@ -1,6 +1,9 @@
 // Color pallette: https://applecolors.com/palette/21064-neon-at-night-palette
 Car[] cars;
-int numCars = 1500;
+Car[] foregroundCars;
+Car[] backgroundCars;
+int numForegroundCars = 1500;
+int numBackgroundCars = 2500;
 
 class Car {
   float hue;
@@ -14,32 +17,19 @@ class Car {
   float speed_direction;
   boolean horizontal;
   
-  Car() { this.setParameters(true); }
+  Car(boolean first_time, boolean background, float car_length, float car_width) { 
+    this.setParameters(first_time, background, car_length, car_width); 
+  }
 
-  void setParameters(boolean first_time) {
+  void setParameters(boolean first_time, boolean background, float car_length, float car_width) {
     // Size
-    this.car_length = random(width/160, width/32);
-    this.car_width = this.car_length * random(0.2, 0.35);
+    this.car_length = car_length;
+    this.car_width = car_width;
     float size_factor = (this.car_length*this.car_width) / (50 * 17.5);  // size divided by max_size
     
-    // Determine direction of movement
-    float f = random(0, 1);
-    if (f > 0.75) {
-      this.speed_direction = 1;
-      this.horizontal = true;
-    } else if (f > 0.5) {
-      this.speed_direction = -1;
-      this.horizontal = true;
-    } else if (f > 0.25) {
-      this.speed_direction = 1;
-      this.horizontal = false;
-    } else {
-      this.speed_direction = -1;
-      this.horizontal = false;
-    }
-    if (random(0,1) > 0.5) {this.horizontal = true;}
-    else {this.horizontal = false;}
-    
+    this.speed_direction = 1;
+    this.horizontal = false;
+
     // Position and speed
     if (first_time) {
       if (size_factor < 0.5) {
@@ -51,13 +41,11 @@ class Car {
         this.ypos = height/2 + (height/3) * randomGaussian();
       }
     } else {
-      if (this.horizontal && this.speed_direction == 1) {this.xpos = -this.car_length;}
-      else if (this.horizontal && this.speed_direction == -1) {this.xpos = width + this.car_length;}
-      else if (!this.horizontal && this.speed_direction == 1) {this.ypos = -this.car_length;}
-      else {this.ypos = height + this.car_length;}
-    }    
+        this.ypos = -this.car_length;
+      }
+    if (background) {this.xpos = random(0, width);}
     
-    this.speed = 0.1 + randomGaussian() * 40/(this.car_length * this.car_width);
+    this.speed = max(0.1, 0.1 + randomGaussian() * 5/this.car_width);
     
     // Color
     float r = random(0, 1);
@@ -72,7 +60,7 @@ class Car {
       else if (r > 0.20) {this.hue = 261.57; this.saturation = 77; this.brightness = 78;}  // blue
       else {this.hue = 0; this.saturation = 0; this.brightness = 100;}  // white
     }
-    
+    if (background) {this.brightness /= 2;}    
   }
   
   void move() {
@@ -124,24 +112,31 @@ void setup() {
   fullScreen();
   colorMode(HSB, 360, 100, 100, 1.0);
   
-  cars = new Car[numCars];
-  for (int i = 0; i < cars.length; i++) {
-    cars[i] = new Car();
+  cars = new Car[numForegroundCars + numBackgroundCars];
+  for (int i = 0; i < numBackgroundCars; i++) {
+    float l = random(width/60, width/20);
+    float w = l * random(0.2, 0.35);
+    cars[i] = new Car(true, true, l, w);
   }
+  for (int i = 0; i < numForegroundCars; i++) {
+    float l = random(width/160, width/40);
+    float w = l * random(0.2, 0.35);
+    cars[i + numBackgroundCars] = new Car(true, false, l, w);
+  }
+  
 }
 
 void draw() {
   background(253.17, 100, 32, 1.00);
   for (int i = 0; i < cars.length; i++) {
+    boolean background = false;
+    if (i >= numBackgroundCars) {background = false;} else {background = true;}
     cars[i].move();
     cars[i].display();
     
     // If car is off the grid, generate a new start position and size and stuff
-    if ((cars[i].xpos > width+cars[i].car_length && cars[i].speed_direction == 1) || 
-        (cars[i].xpos < -cars[i].car_length && cars[i].speed_direction == -1) || 
-        (cars[i].ypos > height+cars[i].car_length && cars[i].speed_direction == 1) || 
-        (cars[i].ypos < -cars[i].car_length && cars[i].speed_direction == -1)) {
-      cars[i].setParameters(false);
+    if (cars[i].ypos > height+cars[i].car_length && cars[i].speed_direction == 1) { 
+      cars[i].setParameters(false, background, cars[i].car_length, cars[i].car_width);
     }
   }
 }
