@@ -48,15 +48,15 @@ class Car {
   
   void fillDistortedColor() {
     double theta = generateNoise(this.xpos, this.ypos) * Math.PI * 3;
-    double hue_noise = Math.cos(theta)*10 + Math.cos(frameCount/100)*10;
+    double hue_noise = Math.cos(theta)*10 + Math.cos(frameCount/100.0)*10;
     double hue_distorted = this.hue + hue_noise;
     color c = color((float)hue_distorted, this.saturation, this.brightness);
     fill(c);
   }
   
   double generateNoise(float x, float y) {
-    float z = frameCount / 400;
-    float z2 = frameCount / 2000;
+    float z = frameCount / 400.0;
+    float z2 = frameCount / 2000.0;
     float noiseX = 0.01 * (dist(this.xpos, this.ypos, width/2, height/2) + z2); 
     float noiseY = 0.01 * (dist(this.xpos, this.ypos, width/2, height/2) + z2); 
     return noise(noiseX, noiseY, z);

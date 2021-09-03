@@ -66,7 +66,8 @@ Particle particles[];
 int num_particles = 1000;
 
 void setup() {
-  size(1200, 400);
+  //size(1200, 400);
+  fullScreen();
   background(0);
   
   particles = new Particle[num_particles];
