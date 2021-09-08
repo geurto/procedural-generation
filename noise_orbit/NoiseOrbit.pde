@@ -1,91 +1,72 @@
-class NoiseOrbit {
-  int num_circles;
-  float interval;
-  float min_radius;
-  float max_radius;
-  PShape[] circles;
-  PShape[] distorted_circles;
-  PShape[] smooth_circles;
+class NoiseCircle {
+  float radius;
+  PVector[] points;
   int num_sides;
   
-  NoiseOrbit(int _num_circles, float _interval, float _min_radius, int _num_sides) {
-    this.num_circles = _num_circles;
-    this.interval = _interval;
-    this.min_radius = _min_radius;
-    this.max_radius = this.min_radius + (this.interval * this.num_circles);
+  NoiseCircle(float _radius, int _num_sides) {
+    this.radius = _radius;
     this.num_sides = _num_sides;
     
-    this.circles = new PShape[this.num_circles];
-    this.distorted_circles = new PShape[this.num_circles];
-    this.smooth_circles = new PShape[this.num_circles];
+    points = new PVector[this.num_sides];
+    for (int p = 0; p < this.num_sides; p++) {
+      points[p] = new PVector();
+    }
     
     noFill();
-
-    for (int c = 0; c < num_circles; c++) {
-      this.circles[c] = new PShape();
-      this.circles[c].setStroke(0); // black stroke
-    }
+    
+    this.create();
   }
   
   void create() {
-    for (int c = 0; c < this.num_circles; c++) {
-      float radius = this.min_radius + c * this.interval;
-      this.circles[c] = this.make_circle(radius);
+    float theta = radians(360/float(this.num_sides));
+    for (int s = 0; s < this.num_sides; s++) {
+      points[s].x = radius * cos(s * theta);
+      points[s].y = radius * sin(s * theta);
     }
   }
   
   void loop() {
-    for (int c = 0; c < this.num_circles; c++) {
-      this.distorted_circles[c] = this.distort(this.circles[c]);
-      this.display(this.distorted_circles[c]);
+    this.distort();
+    this.display();
+  }
+  
+  void distort() {
+    for (int i = 0; i < this.num_sides; i++) {
+      points[i] = this.noise_function(points[i]);
     }
   }
   
-  PShape make_circle(float radius) {
-    PShape circle = new PShape();
-    circle = createShape();
-    circle.beginShape();
-    circle.strokeWeight(w(0.001));
+  void display() {
+    beginShape();
+    strokeWeight(w(0.0005));
 
-    float theta = 0;
-
-    for (int s = 0; s <= this.num_sides; s++) {
-      float x = radius * cos(theta);
-      float y = radius * sin(theta);
-      circle.vertex(x, y);
-      theta += TWO_PI / this.num_sides;
+    // start control point
+    curveVertex(this.points[this.num_sides - 1].x + w(0.5), this.points[this.num_sides - 1].y + h(0.5));
+    
+    // these points are drawn
+    for (int s = 0; s < this.num_sides; s++) {
+      curveVertex(this.points[s].x + w(0.5), this.points[s].y + h(0.5));
     }
-    circle.endShape(CLOSE);
-    return circle;
-  }
-  
-  PShape distort(PShape circle) {
-    PShape distorted_circle = circle;
-
-    for (int v = 0; v < distorted_circle.getVertexCount(); v++) {
-      PVector p = distorted_circle.getVertex(v);
-      PVector p_distorted = noise_function(p);
-      distorted_circle.setVertex(v, p_distorted);
-    }
-    return distorted_circle;
-  }
-  
-  void display(PShape circle) {
-    shape(circle, w(0.5), h(0.5));
+    curveVertex(this.points[0].x + w(0.5), this.points[0].y + h(0.5));
+    
+    // end control point
+    curveVertex(this.points[1].x + w(0.5), this.points[1].y + h(0.5));
+    
+    endShape();
   }
   
   PVector noise_function(PVector p) {
     float x = p.x;
     float y = p.y;
     float distance = dist(0.5, 0.5, x, y);
-    float z = frameCount / 500;
+    float z = frameCount / 50;
     float z2 = frameCount / 200;
   
     float noise_x = (x + 0.31) * distance * 2 + z2;
     float noise_y = (y - 1.73) * distance * 2 + z2;
-    float noise = noise(noise_x, noise_y, z);
+    float perlin_noise = noise(noise_x, noise_y, z);
     
-    float theta = noise * PI * 3;
+    float theta = perlin_noise * PI * 3;
     float amount_to_nudge = 0.08 - cos(z) * 0.08;
     p.x += amount_to_nudge * cos(theta);
     p.y += amount_to_nudge * sin(theta);
