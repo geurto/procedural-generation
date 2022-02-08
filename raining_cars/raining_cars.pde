@@ -13,14 +13,15 @@ void setup() {
   for (int i = 0; i < numBackgroundCars; i++) {
     float l = random(width/60, width/20);
     float w = l * random(0.2, 0.35);
-    backgroundCars[i] = new BackgroundCar(l, w);
+    color c = color(random(210, 240), 80, 60);
+    backgroundCars[i] = new BackgroundCar(l, w, c);
   }
   for (int i = 0; i < numForegroundCars; i++) {
     float l = random(width/160, width/40);
     float w = l * random(0.2, 0.35);
-    foregroundCars[i] = new Car(l, w);
+    color c = color(random(0, 30), 100, 100);
+    foregroundCars[i] = new Car(l, w, c);
   }
-  
 }
 
 void draw() {
