@@ -4,6 +4,7 @@ class FlowWindow {
   float xsize;
   float ysize;
   ArrayList<PVector> points = new ArrayList<PVector>();
+  PVector[][] flowfield;
   
   // colors used for points
   color[] pal = {
