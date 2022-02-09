@@ -1,3 +1,5 @@
+// TODO: add particles like in https://github.com/yanhann10/creative_coding/tree/master/p5/flow/flow-lines
+
 FlowWindow[] windows;
  
 // global configuration
