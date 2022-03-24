@@ -1,5 +1,6 @@
 int cols = 50;
 int rows = 50;
+int cell_size = 16;
 float w;
 float h;
 
@@ -12,8 +13,8 @@ Cell end;
 ArrayList<Cell> path = new ArrayList<Cell>();
 
 float heuristic(Cell a, Cell b) {
-  //return dist(a.x, a.y, b.x, b.y); 
-  return abs(a.x - b.x) + abs(a.y - b.y);
+  return dist(a.x, a.y, b.x, b.y); 
+  //return abs(a.x - b.x) + abs(a.y - b.y);  // taxicab, when no diagonals
 }
 
 void setup() {
@@ -36,10 +37,9 @@ void setup() {
     }
   }
   
-  //start = grid[int(random(0, rows - 1))][int(random(0, cols - 1))];
-  //end = grid[int(random(0, rows - 1))][int(random(0, cols - 1))];
   start = grid[0][0];
-  end = grid[rows - 1][cols - 1];
+  end = grid[int(random(0, rows - 1))][int(random(0, cols - 1))];
+
   start.obstacle = false;
   end.obstacle = false;
   
@@ -80,28 +80,32 @@ void draw() {
           float tempG = current.g + 1;
           
           // check if new G-score is lower than older (if any) - if so, this is the new fastest path
+          boolean newPath = false;
           if (openSet.lastIndexOf(neighbour) != -1) {
             if (tempG < neighbour.g) {
               neighbour.g = tempG;
+              newPath = true;
             }
-          // add neighbour to open set
+          // add neighbour to open set IF it is not in with a better score
           } else {
             neighbour.g = tempG;
+            newPath = true;
             openSet.add(neighbour);
           }
-          neighbour.h = heuristic(neighbour, end);
-          neighbour.f = neighbour.g + neighbour.h;
-          neighbour.cameFrom = current;
+          if (newPath) {
+            neighbour.h = heuristic(neighbour, end);
+            neighbour.f = neighbour.g + neighbour.h;
+            neighbour.cameFrom = current;
+          }
         }
       }
-      
-      // trace back path
-      path.clear();
-      path.add(current);
-      while (current.cameFrom != null) {
-        path.add(current.cameFrom);
-        current = current.cameFrom;
-      }
+    }
+    // trace back path
+    path.clear();
+    path.add(current);
+    while (current.cameFrom != null) {
+      path.add(current.cameFrom);
+      current = current.cameFrom;
     }
     
   } else {
@@ -112,25 +116,41 @@ void draw() {
   }
   
   // *** Draw cells *** //
-  background(0);
+  background(#FCCE8E);
+  
+  // draw obstacles
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       grid[i][j].show(color(#FCCE8E));
     }
   }
   
+  // draw visited nodes
   for (int i = 0; i < closedSet.size(); i++) {
     closedSet.get(i).show(color(#FBE7D3));
   }
   
+  // draw nodes in queue
   for (int i = 0; i < openSet.size(); i++) {
     openSet.get(i).show(color(#BED8CF));
   }
   
+  // draw path nodes
   for (int i = 0; i < path.size(); i++) {
-    path.get(i).show(color(#0CAFA9)); 
-  }
+    path.get(i).show(color(#0CAFA9));
+  }  
   
+  // draw start & end squares
   start.show(color(#ED6F00));
   end.show(color(#05E288));
+  
+  // draw path with line
+  noFill();
+  stroke(#ED6F00);
+  strokeWeight(5);
+  beginShape();
+  for (int i = 0; i < path.size(); i++) {
+    vertex(path.get(i).x * w + w/2, path.get(i).y * h + h/2);
+  }
+  endShape();
 }

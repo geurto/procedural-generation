@@ -26,13 +26,15 @@ class Cell {
   }
   
   void show(color col) {
+    noStroke();
     if (this.obstacle) {
       fill(#963F2D);
+      ellipse(this.x * wc + wc/2, this.y * hc + hc/2, wc/2, hc/2);
     } else {
       fill(col);
+      rect(this.x * this.wc, this.y * this.hc, this.wc - 1, this.hc - 1);
     }
-    noStroke();
-    rect(this.x * this.wc, this.y * this.hc, this.wc - 1, this.hc - 1);
+    
   }
   
   void addNeighbours(Cell[][] grid) {
