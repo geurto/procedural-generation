@@ -5,32 +5,28 @@ class Particle {
   float x, y;
   float vx = 0;
   float vy = 0;
-  float max_velocity = 5.0;
+  float friction = 0.23;
   float[] attractions;
   float[] minDist;
   float[] maxDist;
   
-  Particle(int type, int num_colors) {
+  Particle(int type, int num_colors, float[] attractions, float[] min_distance, float[] max_distance) {
     this.type = type;
-    this.c = color(type * (360 / num_colors), 100, 100);;
+    this.c = color(type * (360 / num_colors), 100, 100);
     this.x = random(width);
     this.y = random(height);
     
-    this.attractions = new float[num_colors];
-    this.minDist = new float[num_colors];
-    this.maxDist = new float[num_colors];
-    
-    // generate random attractions to other colours, as well as min/max distance for attractions
-    for (int i = 0; i < num_colors; i++) {
-      this.attractions[i] = random(-1.0, 1.0);
-      this.minDist[i] = random(this.size, 2 * this.size);
-      this.maxDist[i] = random(5 * this.size, 20 * this.size);
-    }
+    this.attractions = attractions;
+    this.minDist = min_distance;
+    this.maxDist = max_distance;
   }
   
   void step() {
     this.x += this.vx;
     this.y += this.vy;
+    
+    this.vx *= (1 - this.friction); 
+    this.vy *= (1 - this.friction); 
     this.checkBounds();
   }
   
@@ -39,12 +35,6 @@ class Particle {
     if (this.x > width) { this.x = 0; }
     if (this.y < 0) { this.y = height; }
     if (this.y > height) { this.y = 0; }
-    
-    if (this.vx < -max_velocity) { this.vx = -max_velocity; }
-    if (this.vx > max_velocity) { this.vx = max_velocity; }
-    if (this.vy < -max_velocity) { this.vy = -max_velocity; }
-    if (this.vy > max_velocity) { this.vy = max_velocity; }
-
   }
     
   
