@@ -1,47 +1,55 @@
 class Particle {
+  int type;
   color c;
-  float[][] attraction_matrix;
-  int index_in_matrix;
-  int size = width / 200;
-  PVector position;
-  PVector speed;
-  PVector force;
+  int size = width / 250;
+  float x, y;
+  float vx = 0;
+  float vy = 0;
   float max_velocity = 5.0;
+  float[] attractions;
+  float[] minDist;
+  float[] maxDist;
   
-  Particle(color c, float[][] attraction_matrix, int index_in_matrix) {
-    this.c = c;
-    this.attraction_matrix = attraction_matrix;
-    this.index_in_matrix = index_in_matrix;
-    this.position = new PVector(random(width), random(height));
-    this.speed = new PVector(0, 0);
-    this.force = new PVector(random(-0.2, 0.2), random(-0.2, 0.2));
+  Particle(int type, int num_colors) {
+    this.type = type;
+    this.c = color(type * (360 / num_colors), 100, 100);;
+    this.x = random(width);
+    this.y = random(height);
+    
+    this.attractions = new float[num_colors];
+    this.minDist = new float[num_colors];
+    this.maxDist = new float[num_colors];
+    
+    // generate random attractions to other colours, as well as min/max distance for attractions
+    for (int i = 0; i < num_colors; i++) {
+      this.attractions[i] = random(-1.0, 1.0);
+      this.minDist[i] = random(this.size, 2 * this.size);
+      this.maxDist[i] = random(5 * this.size, 20 * this.size);
+    }
   }
   
-  void evolve() {
-    this.speed.add(this.force);
-    this.position.add(this.speed);
+  void step() {
+    this.x += this.vx;
+    this.y += this.vy;
     this.checkBounds();
-    
-    this.force.x = this.force.x + random(-0.03, 0.03);
-    this.force.y = this.force.y + random(-0.03, 0.03);
   }
   
   void checkBounds() {
-    if (this.position.x < 0) { this.position.x = width; }
-    if (this.position.x > width) { this.position.x = 0; }
-    if (this.position.y < 0) { this.position.y = height; }
-    if (this.position.y > height) { this.position.y = 0; }
+    if (this.x < 0) { this.x = width; }
+    if (this.x > width) { this.x = 0; }
+    if (this.y < 0) { this.y = height; }
+    if (this.y > height) { this.y = 0; }
     
-    if (this.speed.x < -max_velocity) { this.speed.x = -max_velocity; }
-    if (this.speed.x > max_velocity) { this.speed.x = max_velocity; }
-    if (this.speed.y < -max_velocity) { this.speed.y = -max_velocity; }
-    if (this.speed.y > max_velocity) { this.speed.y = max_velocity; }
+    if (this.vx < -max_velocity) { this.vx = -max_velocity; }
+    if (this.vx > max_velocity) { this.vx = max_velocity; }
+    if (this.vy < -max_velocity) { this.vy = -max_velocity; }
+    if (this.vy > max_velocity) { this.vy = max_velocity; }
 
   }
     
   
   void draw() {
-    circle(this.position.x, this.position.y, this.size);
+    circle(this.x, this.y, this.size);
     fill(this.c);
   }
 }
