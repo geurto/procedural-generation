@@ -1,5 +1,6 @@
 class World {
   ArrayList<Particle> particles = new ArrayList<Particle>();
+  RegionGraph regions;
   int num_colors, num_particles;
   int particle_size;
   float[][] attractions, min_dist, max_dist;
@@ -13,6 +14,10 @@ class World {
   void restart() {
     this.particles.clear();
     this.createParticles();
+  }
+  
+  void createRegions() {
+    
   }
   
   void createParticles() {
@@ -46,6 +51,7 @@ class World {
   
   void removeRandomParticles(int n) {
     for (int i = 0; i < n; i++) {
+      if (this.particles.size() == 0) { break; }
       int index_to_remove = int(random(this.particles.size()));
       this.particles.remove(index_to_remove);
     }
@@ -74,7 +80,6 @@ class World {
           if (dist > d_min) {
             f = this.attractions[p.type][q.type] * (1.0 - (2.0 * abs(dist - 0.5 * (d_max + d_min)) / (d_max - d_min)));
           } else {
-            //f = (minDist - dist) / (minDist - p.size /2);
             f = 2 * p.size * d_min * (1 / (d_min + 2 * p.size) - 1 / (dist + 2 * p.size));
           }
           p.vx += f * dx / dist;

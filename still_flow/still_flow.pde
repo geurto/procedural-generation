@@ -12,13 +12,13 @@ void setup() {
   noFill();
   smooth(8);
   
-  windows = new FlowWindow[5];
+  windows = new FlowWindow[1];
   
-  windows[0] = new FlowWindow(width/4, height/4, width/8, height/8);
-  windows[1] = new FlowWindow(width/4, 3*height/4, width/8, height/8);
-  windows[2] = new FlowWindow(3*width/4, 3*height/4, width/8, height/8);
-  windows[3] = new FlowWindow(3*width/4, height/4, width/8, height/8);
-  windows[4] = new FlowWindow(width/2, height/2, width/3, height/3);
+  //windows[0] = new FlowWindow(width/4, height/4, width/8, height/8);
+  //windows[1] = new FlowWindow(width/4, 3*height/4, width/8, height/8);
+  //windows[2] = new FlowWindow(3*width/4, 3*height/4, width/8, height/8);
+  //windows[3] = new FlowWindow(3*width/4, height/4, width/8, height/8);
+  windows[0] = new FlowWindow(width/2, height/2, width * 0.9, height * 0.9);
 }
  
 void draw() {
