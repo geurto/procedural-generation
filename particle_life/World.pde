@@ -8,6 +8,10 @@ class World {
     this.num_colors = num_colors;
     this.num_particles = num_particles;
     this.particle_size = particle_size;
+  }
+  
+  void restart() {
+    this.particles.clear();
     this.createParticles();
   }
   
@@ -23,9 +27,20 @@ class World {
         this.min_dist[c][i] = this.particle_size * random(1, 2);
         this.max_dist[c][i] = this.particle_size * random(5, 20);
     }
-      for (int p = 0; p < num_particles; p++) {
-        this.particles.add(new Particle(c, this.num_colors, this.particle_size));
+      this.addParticles(c, this.num_particles);
+    }
+  }
+  
+  void addParticles(int type, int num_particles) {
+    for (int p = 0; p < num_particles; p++) {
+        this.particles.add(new Particle(type, this.num_colors, this.particle_size));
       }
+  }
+  
+  void removeRandomParticles(int n) {
+    for (int i = 0; i < n; i++) {
+      int index_to_remove = int(random(this.particles.size()));
+      this.particles.remove(index_to_remove);
     }
   }
   
