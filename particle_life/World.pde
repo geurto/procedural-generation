@@ -21,13 +21,20 @@ class World {
     this.min_dist = new float[this.num_colors][this.num_colors];
     this.max_dist = new float[this.num_colors][this.num_colors];
     
+    this.randomizeWeights();
+    
+    for (int c = 0; c < this.num_colors; c++) {
+      this.addParticles(c, this.num_particles);
+    }
+  }
+  
+  void randomizeWeights() {
     for (int c = 0; c < this.num_colors; c++) {
       for (int i = 0; i < num_colors; i++) {
         attractions[c][i] = 0.25 * int(random(-4, 4));
         this.min_dist[c][i] = this.particle_size * random(1, 2);
         this.max_dist[c][i] = this.particle_size * random(5, 20);
-    }
-      this.addParticles(c, this.num_particles);
+      }
     }
   }
   

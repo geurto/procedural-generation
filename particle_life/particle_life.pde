@@ -1,3 +1,12 @@
+/*
+ * Particle Life simulation
+ * Controls:
+ *  - ENTER: restart simulation with new particles and weights.
+ *  - UP ARROW: increase number of particles for every type by 100.
+ *  - DOWN ARROW: randomly remove 400 particles.
+ *  - w/W: ransomize weights (attractions, minimum/maximum attraction radii).
+ */
+
 World world;
 int num_types = 6;
 int particles_per_type = 500;
@@ -23,11 +32,13 @@ void keyPressed() {
         world.addParticles(i, 100);
       }
     } else if (keyCode == DOWN) {
-      world.removeRandomParticles(100);
+      world.removeRandomParticles(400);
     }
   } else {
     if (keyCode == ENTER) {
       world.restart();
+    } else if (keyCode == 'w' || keyCode == 'W') {
+      world.randomizeWeights();
     }
   }
 }
