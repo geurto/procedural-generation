@@ -1,27 +1,30 @@
 class World {
   ArrayList<Particle> particles = new ArrayList<Particle>();
   int num_colors, num_particles;
+  int particle_size;
+  float[][] attractions, min_dist, max_dist;
   
-  World(int num_colors, int num_particles) {
+  World(int num_colors, int num_particles, int particle_size) {
     this.num_colors = num_colors;
     this.num_particles = num_particles;
-    this.createParticles(num_colors, num_particles);
+    this.particle_size = particle_size;
+    this.createParticles();
   }
   
-  void createParticles(int num_colors, int num_particles) {
-    for (int c = 0; c < num_colors; c++) {
-      // generate random attractions to other colours, as well as min/max distance for attractions
-      float[] attractions = new float[num_colors];
-      float[] minimum_distance = new float[num_colors];
-      float[] maximum_distance = new float[num_colors];
-      
+  void createParticles() {
+    // generate random attractions to other colours, as well as min/max distance for attractions
+    this.attractions = new float[this.num_colors][this.num_colors];
+    this.min_dist = new float[this.num_colors][this.num_colors];
+    this.max_dist = new float[this.num_colors][this.num_colors];
+    
+    for (int c = 0; c < this.num_colors; c++) {
       for (int i = 0; i < num_colors; i++) {
-      attractions[i] = random(-1.0, 1.0);
-      minimum_distance[i] = random(5, 10);
-      maximum_distance[i] = random(25, 100);
+        attractions[c][i] = 0.25 * int(random(-4, 4));
+        this.min_dist[c][i] = this.particle_size * random(1, 2);
+        this.max_dist[c][i] = this.particle_size * random(5, 20);
     }
       for (int p = 0; p < num_particles; p++) {
-        this.particles.add(new Particle(c, num_colors, attractions, minimum_distance, maximum_distance));
+        this.particles.add(new Particle(c, this.num_colors, this.particle_size));
       }
     }
   }
@@ -33,25 +36,24 @@ class World {
       for (int j = 0; j < this.particles.size(); j++) {
         if (i != j) {
           Particle q = this.particles.get(j);
-          float minDist = p.minDist[q.type];
-          float maxDist = p.maxDist[q.type];
+          float d_min = this.min_dist[p.type][q.type];
+          float d_max = this.max_dist[p.type][q.type];
           
           // calculate forces between particles
           float dx = q.x - p.x;
           float dy = q.y - p.y;
           float dist = dist(p.x, p.y, q.x, q.y);
           
-          // particles can't be closer to each other than half their size
-          if ((dist < 0.01) || (dist > maxDist)) {
+          if ((dist < 0.01) || (dist > d_max)) {
             continue;
           }
           
           float f;
-          if (dist > minDist) {
-            f = p.attractions[q.type] * (1.0 - (2.0 * abs(dist - 0.5 * (maxDist + minDist)) / (maxDist - minDist)));
+          if (dist > d_min) {
+            f = this.attractions[p.type][q.type] * (1.0 - (2.0 * abs(dist - 0.5 * (d_max + d_min)) / (d_max - d_min)));
           } else {
             //f = (minDist - dist) / (minDist - p.size /2);
-            f = 2 * p.size * minDist * (1 / (minDist + 2 * p.size) - 1 / (dist + 2 * p.size));
+            f = 2 * p.size * d_min * (1 / (d_min + 2 * p.size) - 1 / (dist + 2 * p.size));
           }
           p.vx += f * dx / dist;
           p.vy += f * dy / dist;

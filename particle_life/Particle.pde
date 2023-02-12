@@ -1,24 +1,17 @@
 class Particle {
-  int type;
+  int type, size;
   color c;
-  int size = width / 250;
   float x, y;
   float vx = 0;
   float vy = 0;
-  float friction = 0.23;
-  float[] attractions;
-  float[] minDist;
-  float[] maxDist;
+  float friction = 0.43;
   
-  Particle(int type, int num_colors, float[] attractions, float[] min_distance, float[] max_distance) {
+  Particle(int type, int num_colors, int particle_size) {
     this.type = type;
+    this.size = particle_size;
     this.c = color(type * (360 / num_colors), 100, 100);
     this.x = random(width);
     this.y = random(height);
-    
-    this.attractions = attractions;
-    this.minDist = min_distance;
-    this.maxDist = max_distance;
   }
   
   void step() {
