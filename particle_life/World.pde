@@ -14,9 +14,21 @@ class World {
   void restart() {
     this.particles.clear();
     this.createParticles();
+    this.createRegions();
   }
   
   void createRegions() {
+    /* Region size should AT LEAST be the maximum attraction distance, so that any interacting particles are at most 1 region apart.
+     * so num_columns = floor(width / MAX_DIST) etc. 
+     */
+    float d_max = 0;
+    for (int t = 0; t < this.num_colors; t++) {
+      float m = max(this.max_dist[t]);
+      if (m > d_max) { d_max = m; }
+    }
+    int num_columns = floor(width / d_max);
+    int num_rows = floor(height / d_max);
+    this.regions = new RegionGraph(num_columns, num_rows);    
     
   }
   
@@ -41,6 +53,7 @@ class World {
         this.max_dist[c][i] = this.particle_size * random(5, 20);
       }
     }
+    this.createRegions();
   }
   
   void addParticles(int type, int num_particles) {
