@@ -24,9 +24,9 @@ class Particle {
   }
   
   void checkBounds() {
-    if (this.x < 0) { this.x = width; }
+    if (this.x < 0) { this.x = width - 0.001; }
     if (this.x > width) { this.x = 0; }
-    if (this.y < 0) { this.y = height; }
+    if (this.y < 0) { this.y = height - 0.001; }
     if (this.y > height) { this.y = 0; }
   }
     

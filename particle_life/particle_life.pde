@@ -9,7 +9,7 @@
 
 World world;
 int num_types = 6;
-int particles_per_type = 500;
+int particles_per_type = 50;
 int particle_size = 5;
 
 void setup() {

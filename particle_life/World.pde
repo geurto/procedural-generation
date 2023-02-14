@@ -26,10 +26,15 @@ class World {
       float m = max(this.max_dist[t]);
       if (m > d_max) { d_max = m; }
     }
+
     int num_columns = floor(width / d_max);
     int num_rows = floor(height / d_max);
-    this.regions = new RegionGraph(num_columns, num_rows);    
+    this.regions = new RegionGraph(num_columns, num_rows);
     
+    for (Particle p: this.particles) {
+      Region r = this.regions.getRegion(p.x, p.y);
+      r.particles.add(p);
+    }
   }
   
   void createParticles() {
@@ -70,41 +75,66 @@ class World {
     }
   }
   
+  void calculateInteraction(Particle p, Particle q) {
+    float d_min = this.min_dist[p.type][q.type];
+    float d_max = this.max_dist[p.type][q.type];
+    
+    // calculate forces between particles
+    float dx = q.x - p.x;
+    float dy = q.y - p.y;
+    float dist = dist(p.x, p.y, q.x, q.y);
+    
+    if ((dist < 0.01) || (dist > d_max)) {
+      return;
+    }
+    
+    float f;
+    if (dist > d_min) {
+      f = this.attractions[p.type][q.type] * (1.0 - (2.0 * abs(dist - 0.5 * (d_max + d_min)) / (d_max - d_min)));
+    } else {
+      f = 2 * p.size * d_min * (1 / (d_min + 2 * p.size) - 1 / (dist + 2 * p.size));
+    }
+    p.vx += f * dx / dist;
+    p.vy += f * dy / dist;
+  }
+  
   void step() {
     for (int i = 0; i < this.particles.size(); i++) {
       Particle p = this.particles.get(i);
+      Region r = this.regions.getRegion(p.x, p.y);
       
-      for (int j = 0; j < this.particles.size(); j++) {
-        if (i != j) {
-          Particle q = this.particles.get(j);
-          float d_min = this.min_dist[p.type][q.type];
-          float d_max = this.max_dist[p.type][q.type];
-          
-          // calculate forces between particles
-          float dx = q.x - p.x;
-          float dy = q.y - p.y;
-          float dist = dist(p.x, p.y, q.x, q.y);
-          
-          if ((dist < 0.01) || (dist > d_max)) {
-            continue;
-          }
-          
-          float f;
-          if (dist > d_min) {
-            f = this.attractions[p.type][q.type] * (1.0 - (2.0 * abs(dist - 0.5 * (d_max + d_min)) / (d_max - d_min)));
-          } else {
-            f = 2 * p.size * d_min * (1 / (d_min + 2 * p.size) - 1 / (dist + 2 * p.size));
-          }
-          p.vx += f * dx / dist;
-          p.vy += f * dy / dist;
+      for (Particle q: r.particles) {
+        this.calculateInteraction(p, q);
+      }
+      
+      for (Region n: r.neighbours) {
+        for (Particle q: n.particles) {
+          this.calculateInteraction(p, q);
         }
       }
       p.step();  // step particle
+      Region r_new = this.regions.getRegion(p.x, p.y);
+      r_new.buffer.add(p);
+    }
+    
+    for (Region r: this.regions.graph) {
+      r.particles.clear();
+      r.particles.addAll(r.buffer);
+      r.buffer.clear();
     }
   }
   
   void draw() {
     background(0, 0, 0);
+    for (int rr = 0; rr < this.regions.n_rows; rr++) {
+      stroke(255);
+      line(0, rr * this.regions.region_height, width, rr * this.regions.region_height);
+    }
+    for (int rc = 0; rc < this.regions.n_cols; rc++) {
+      stroke(255);
+      line(rc * this.regions.region_width, 0, rc * this.regions.region_width, height);
+    }
+    stroke(0);
     for (int i = 0; i < this.particles.size(); i++) {
       Particle part = this.particles.get(i);
       part.draw();

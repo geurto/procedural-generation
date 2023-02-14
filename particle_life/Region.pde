@@ -2,6 +2,7 @@ class Region {
   int i, row, col;
   ArrayList<Region> neighbours = new ArrayList<Region>();
   ArrayList<Particle> particles = new ArrayList<Particle>();
+  ArrayList<Particle> buffer = new ArrayList<Particle>();
 
   Region(int i, int number_of_regions) {
     this.i = i;
@@ -44,9 +45,8 @@ class RegionGraph {
   
   Region getRegion(float x, float y) {
     // return region particle is in
-    int col = floor(x / this.region_width);
-    int row = floor(y / this.region_height);
-    
+    int col = min(max(floor(x / this.region_width), 0), this.n_cols - 1);
+    int row = min(max(floor(y / this.region_height), 0), this.n_rows - 1);
     return this.graph.get(col + row * this.n_cols);
   }
   
