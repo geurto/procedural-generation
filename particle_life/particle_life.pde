@@ -9,12 +9,14 @@
 
 World world;
 int num_types = 6;
-int particles_per_type = 50;
-int particle_size = 5;
+int particles_per_type = 500;
 
 void setup() {
-  fullScreen();
+  //fullScreen();
+  size(800, 800);
   colorMode(HSB, 360, 100, 100, 1.0);
+    
+  int particle_size = 5;
   world = new World(num_types, particles_per_type, particle_size);
   world.createParticles();
 }
