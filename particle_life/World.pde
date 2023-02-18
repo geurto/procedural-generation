@@ -26,7 +26,7 @@ class World {
       float m = max(this.max_dist[t]);
       if (m > d_max) { d_max = m; }
     }
-
+    
     int num_columns = floor(width / d_max);
     int num_rows = floor(height / d_max);
     this.regions = new RegionGraph(num_columns, num_rows);
@@ -103,20 +103,27 @@ class World {
       Particle p = this.particles.get(i);
       Region r = this.regions.getRegion(p.x, p.y);
       
+      // compute new particle velocity based on particles in own region...
       for (Particle q: r.particles) {
         this.calculateInteraction(p, q);
       }
       
+      // ...and particles in neighbouring regions
       for (Region n: r.neighbours) {
         for (Particle q: n.particles) {
           this.calculateInteraction(p, q);
         }
       }
+    }
+    
+    // now that all new velocities are calculated, evolve particles and compute new regions
+    for (Particle p: this.particles) {
       p.step();  // step particle
       Region r_new = this.regions.getRegion(p.x, p.y);
       r_new.buffer.add(p);
     }
     
+    // adopt new particle lists in regions
     for (Region r: this.regions.graph) {
       r.particles.clear();
       r.particles.addAll(r.buffer);

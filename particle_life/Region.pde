@@ -35,10 +35,11 @@ class RegionGraph {
     int directions[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, 
                           {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
     for (int i = 0; i < 8; i++) {
-      int x_new = (r.col + directions[i][0]) % this.n_cols;  // wrap back to other side
-      int y_new = (r.row + directions[i][1]) % this.n_rows;
-      if (x_new < 0) { x_new = this.n_cols - 1; }
-      if (y_new < 0) { y_new = this.n_rows - 1; }
+      int[] dir = directions[i];
+      int x_new = (r.col + dir[0]) % this.n_cols;  // wrap back to other side
+      int y_new = (r.row + dir[1]) % this.n_rows;
+      if (x_new < 0) { x_new = this.n_cols + x_new; }
+      if (y_new < 0) { y_new = this.n_rows + y_new; }
       r.neighbours.add(this.graph.get(x_new + y_new * this.n_cols));
     }
   }

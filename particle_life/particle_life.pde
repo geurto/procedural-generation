@@ -12,8 +12,8 @@ int num_types = 6;
 int particles_per_type = 500;
 
 void setup() {
-  //fullScreen();
-  size(800, 800);
+  fullScreen();
+  frameRate(60);
   colorMode(HSB, 360, 100, 100, 1.0);
     
   int particle_size = 5;
