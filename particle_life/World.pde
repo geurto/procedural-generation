@@ -4,37 +4,26 @@ class World {
   int num_colors, num_particles;
   int particle_size;
   float[][] attractions, min_dist, max_dist;
+  boolean wrap;
+  boolean draw_lines = false;
   
-  World(int num_colors, int num_particles, int particle_size) {
+  World(int num_colors, int num_particles, int particle_size, boolean wrap) {
+    println("Creating world with:");
+    println("- " + num_colors + " particle types");
+    println("- " + num_particles + " particles per type");
+    println("- " + particle_size + " size particles");
+    println("- wrapping: " + wrap);
+    
     this.num_colors = num_colors;
     this.num_particles = num_particles;
     this.particle_size = particle_size;
+    this.wrap = wrap;
   }
   
   void restart() {
     this.particles.clear();
     this.createParticles();
     this.createRegions();
-  }
-  
-  void createRegions() {
-    /* Region size should AT LEAST be the maximum attraction distance, so that any interacting particles are at most 1 region apart.
-     * so num_columns = floor(width / MAX_DIST) etc. 
-     */
-    float d_max = 0;
-    for (int t = 0; t < this.num_colors; t++) {
-      float m = max(this.max_dist[t]);
-      if (m > d_max) { d_max = m; }
-    }
-    
-    int num_columns = floor(width / d_max);
-    int num_rows = floor(height / d_max);
-    this.regions = new RegionGraph(num_columns, num_rows);
-    
-    for (Particle p: this.particles) {
-      Region r = this.regions.getRegion(p.x, p.y);
-      r.particles.add(p);
-    }
   }
   
   void createParticles() {
@@ -63,7 +52,7 @@ class World {
   
   void addParticles(int type, int num_particles) {
     for (int p = 0; p < num_particles; p++) {
-        this.particles.add(new Particle(type, this.num_colors, this.particle_size));
+        this.particles.add(new Particle(type, this.num_colors, this.particle_size, this.wrap));
       }
   }
   
@@ -75,6 +64,28 @@ class World {
     }
   }
   
+  void createRegions() {
+    /* Region size should AT LEAST be the maximum attraction distance, so that any interacting particles are at most 1 region apart.
+     * so num_columns = floor(width / MAX_DIST) etc. 
+     */
+    float d_max = 0;
+    for (int t = 0; t < this.num_colors; t++) {
+      float m = max(this.max_dist[t]);
+      if (m > d_max) { d_max = m; }
+    }
+    
+    int num_rows = floor(height / d_max);
+    int num_columns = num_rows;
+    println("Creating graph with " + num_rows + " x " + num_rows + " cells (cell size WxH " + width/num_columns + "x" + height/num_rows + ").");
+
+    this.regions = new RegionGraph(num_columns, num_rows, this.wrap);
+    
+    for (Particle p: this.particles) {
+      Region r = this.regions.getRegion(p.x, p.y);
+      r.particles.add(p);
+    }
+  }
+  
   void calculateInteraction(Particle p, Particle q) {
     float d_min = this.min_dist[p.type][q.type];
     float d_max = this.max_dist[p.type][q.type];
@@ -82,7 +93,26 @@ class World {
     // calculate forces between particles
     float dx = q.x - p.x;
     float dy = q.y - p.y;
-    float dist = dist(p.x, p.y, q.x, q.y);
+    float px_rel = p.x;
+    float py_rel = p.y;
+    
+    if (this.wrap) {
+      if (dx > width / 2) { 
+        dx -= width;
+        px_rel += width;
+      } else if (dx < -width / 2) {
+        dx += width;
+        px_rel -= width;
+      }
+      if (dy > height / 2) {
+        dy -= height;
+        py_rel += height;
+      } else if (dy < -height / 2) {
+        dy += height;
+        py_rel -= height;
+      }
+    }
+    float dist = dist(px_rel, py_rel, q.x, q.y);
     
     if ((dist < 0.01) || (dist > d_max)) {
       return;
@@ -133,14 +163,18 @@ class World {
   
   void draw() {
     background(0, 0, 0);
-    for (int rr = 0; rr < this.regions.n_rows; rr++) {
-      stroke(255);
-      line(0, rr * this.regions.region_height, width, rr * this.regions.region_height);
+    
+    if (this.draw_lines) {
+      for (int rr = 0; rr < this.regions.n_rows; rr++) {
+        stroke(255);
+        line(0, rr * this.regions.region_height, width, rr * this.regions.region_height);
+      }
+      for (int rc = 0; rc < this.regions.n_cols; rc++) {
+        stroke(255);
+        line(rc * this.regions.region_width, 0, rc * this.regions.region_width, height);
+      }
     }
-    for (int rc = 0; rc < this.regions.n_cols; rc++) {
-      stroke(255);
-      line(rc * this.regions.region_width, 0, rc * this.regions.region_width, height);
-    }
+    
     stroke(0);
     for (int i = 0; i < this.particles.size(); i++) {
       Particle part = this.particles.get(i);
