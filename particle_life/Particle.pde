@@ -13,6 +13,7 @@ class Particle {
     this.c = color(type * (360 / num_colors), 100, 100);
     this.x = random(width);
     this.y = random(height);
+    this.wrap = wrap;
   }
   
   void step() {
