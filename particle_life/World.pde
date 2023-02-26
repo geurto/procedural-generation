@@ -11,7 +11,7 @@ class World {
     println("Creating world with:");
     println("- " + num_colors + " particle types");
     println("- " + num_particles + " particles per type");
-    println("- " + particle_size + " size particles");
+    println("- particles of diameter " + particle_size);
     println("- wrapping: " + wrap);
     
     this.num_colors = num_colors;
@@ -54,6 +54,7 @@ class World {
     for (int p = 0; p < num_particles; p++) {
         this.particles.add(new Particle(type, this.num_colors, this.particle_size, this.wrap));
       }
+    println("Total number of particles: " + this.particles.size());
   }
   
   void removeRandomParticles(int n) {

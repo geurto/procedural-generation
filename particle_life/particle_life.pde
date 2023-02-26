@@ -4,11 +4,20 @@
  *  - ENTER: restart simulation with new particles and weights.
  *  - UP ARROW: increase number of particles for every type by 100.
  *  - DOWN ARROW: randomly remove 400 particles.
- *  - w/W: ransomize weights (attractions, minimum/maximum attraction radii).
+ *  - w/: ransomize weights (attractions, minimum/maximum attraction radii).
+ *
+ * TO DO:
+ * - add/remove species with left/right arrows (auto-create colours based on current colour scheme).
+ * - balance colour scheme by pressing c.
+ * - show help by pressing h.
+ * - visualize weights by pressing SHIFT+W.
+ * - modify weights by left/right-clicking on visualized weights.
+ * - select species with mouse-wheel, spawn particles at mouse location with left-click.
+ * - have particles react to system audio.
  */
 
 World world;
-int num_types = 5;
+int num_types = 8;
 int particles_per_type = 500;
 boolean wrap = true;
 
