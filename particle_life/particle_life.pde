@@ -17,7 +17,7 @@
  */
 
 World world;
-int num_types = 8;
+int num_types = 3;
 int particles_per_type = 500;
 boolean wrap = true;
 
@@ -45,12 +45,20 @@ void keyPressed() {
       }
     } else if (keyCode == DOWN) {
       world.removeRandomParticles(400);
+    } else if (keyCode == LEFT) {
+      // remove latest particle type
+      world.removeParticleType();
+    } else if (keyCode == RIGHT) {
+      // add particle type
+      world.addParticleType();
     }
   } else {
     if (keyCode == ENTER) {
       world.restart();
     } else if (keyCode == 'w' || keyCode == 'W') {
-      world.randomizeWeights();
+      world.randomizeAllWeights();
+    } else if (keyCode == 'c' || keyCode == 'C') {
+      world.balanceColours();
     }
   }
 }
