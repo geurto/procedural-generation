@@ -1,10 +1,12 @@
 class FlowLine {
+  PVector v;
   int lineLength = 100;
-  float segmentLength = w * 0.001;
+  float segmentLength = w * 0.01;
   GridAngle startingPoint;
   color c;
 
-  FlowLine(int lineLength_, color c_) {
+  FlowLine(PVector v_, int lineLength_, color c_) {
+    this.v = v_;
     this.lineLength = lineLength_;
     this.c = c_;
     this.startingPoint = grid.get((int)random(grid.size())).get((int)random(grid.size()));
@@ -19,8 +21,9 @@ class FlowLine {
 
   void draw() {
     stroke(this.c);
+    strokeWeight(4);
     beginShape();
-    PVector v = this.startingPoint.v;
+    PVector v = this.v;
     curveVertex(v.x, v.y);
 
     for (int i = 0; i < this.lineLength; i++) {

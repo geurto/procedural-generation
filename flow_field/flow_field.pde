@@ -1,5 +1,6 @@
 final ArrayList<ArrayList<GridAngle>> grid = new ArrayList<ArrayList<GridAngle>>();
 final ArrayList<FlowLine> flowLines = new ArrayList<FlowLine>();
+PImage img;
 
 final int w = 1800;
 final int h = 900;
@@ -25,11 +26,13 @@ void createGrid() {
 }
 
 void initializeLines() {
+  img = loadImage("kleuren.png");
   colorMode(HSB, 100);
   for (int i = 0; i < numLines; i++) {
     int lineLength = (int)random(50, 250);
-    color c = color((10 * i) % 360, 100, 40 + 5 * random(0, 12));
-    flowLines.add(new FlowLine(lineLength, c));
+    PVector vec = new PVector(random(width), random(height));
+    color c = img.get((int)vec.x, (int)vec.y);
+    flowLines.add(new FlowLine(vec, lineLength, c));
   }
 }
 
