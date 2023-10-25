@@ -4,7 +4,7 @@
  *  - ENTER: restart simulation with new particles and weights.
  *  - UP ARROW: increase number of particles for every type by 100.
  *  - DOWN ARROW: randomly remove 400 particles.
- *  - w/: ransomize weights (attractions, minimum/maximum attraction radii).
+ *  - w: randomize weights (attractions, minimum/maximum attraction radii).
  *
  * TO DO:
  * - add/remove species with left/right arrows (auto-create colours based on current colour scheme).
@@ -22,7 +22,7 @@ int particles_per_type = 500;
 boolean wrap = true;
 
 void setup() {
-  fullScreen();
+  fullScreen(P2D);
   frameRate(60);
   colorMode(HSB, 360, 100, 100, 1.0);
     

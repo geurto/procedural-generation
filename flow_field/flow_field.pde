@@ -1,14 +1,16 @@
 final ArrayList<ArrayList<GridAngle>> grid = new ArrayList<ArrayList<GridAngle>>();
 final ArrayList<FlowLine> flowLines = new ArrayList<FlowLine>();
 
-final int xOff = 50;
-final int yOff = 50;
+final int w = 1800;
+final int h = 900;
+final int xOff = 0;
+final int yOff = 0;
 final int spacing = 10;
 final float resolution = 0.005;
 
-final int numLines = 100;
+final int numLines = 5000;
 
-boolean drawGrid = true;
+boolean drawGrid = false;
 
 void createGrid() {
   for (int x = xOff; x < (width - xOff); x += spacing) {
@@ -23,20 +25,23 @@ void createGrid() {
 }
 
 void initializeLines() {
+  colorMode(HSB, 100);
   for (int i = 0; i < numLines; i++) {
-    flowLines.add(new FlowLine());
+    int lineLength = (int)random(50, 250);
+    color c = color((10 * i) % 360, 100, 40 + 5 * random(0, 12));
+    flowLines.add(new FlowLine(lineLength, c));
   }
 }
 
 void setup(){
-  size(600,600);
+  size(1800, 900);
   createGrid();
   initializeLines();
 }
 
 void draw() {
   noFill();
-  background(220);
+  background(color(0, 0, 100));
   if (drawGrid) {
     for (int x = 0; x < grid.size(); x++) {
       for (int y = 0; y < grid.get(0).size(); y++) {
