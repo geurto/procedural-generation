@@ -5,10 +5,9 @@ class FlowLine {
   GridAngle startingPoint;
   color c;
 
-  FlowLine(PVector v_, int lineLength_, color c_) {
+  FlowLine(PVector v_, int lineLength_) {
     this.v = v_;
     this.lineLength = lineLength_;
-    this.c = c_;
     this.startingPoint = grid.get((int)random(grid.size())).get((int)random(grid.size()));
   }
 
@@ -19,23 +18,55 @@ class FlowLine {
     return grid.get(nearestX).get(nearestY).angle;
   }
 
-  void draw() {
-    stroke(this.c);
-    strokeWeight(4);
+  void draw(PImage img) {
     beginShape();
     PVector v = this.v;
-    curveVertex(v.x, v.y);
-
+    ArrayList<PVector> points = new ArrayList<PVector>();
+    points.add(v.copy());
+    
     for (int i = 0; i < this.lineLength; i++) {
       float angle = getClosestGridAngle(v);
-      v = new PVector(v.x + this.segmentLength * cos(angle),
-                              v.y + this.segmentLength * sin(angle));
-      if (v.x < -w / 2 || v.x > width + w / 2 || v.y < -h / 2 || v.y > height + h / 2) {
+      angle += map(noise(v.x * 0.01, v.y * 0.01), 0, 1, -PI/8, PI/8);
+      v.add(this.segmentLength * cos(angle), this.segmentLength * sin(angle));
+      
+      if (v.x < -width || v.x > width * 2 || v.y < -height || v.y > height * 2) {
         break;
       }
-      curveVertex(v.x, v.y);
+      points.add(v.copy());
     }
+    
+    // Draw outline
+    stroke(0, 50); // Semi-transparent black for outline
+    strokeWeight(6); // Outline thickness
+    noFill();
+    beginShape();
+    for (PVector pt : points) {
+      curveVertex(pt.x, pt.y);
+    }
+    endShape();
+  
+    // Sample color from the image at the current position
+    color baseColor = img.get((int)constrain(v.x, 0, img.width - 1), (int)constrain(v.y, 0, img.height - 1));
+    
+    // Convert to HSB color mode to adjust properties
+    colorMode(HSB, 360, 100, 100);
+    float h = hue(baseColor);
+    float s = saturation(baseColor);
+    float b = brightness(baseColor);
 
+    // Introduce slight random variations
+    h = (h + random(-10, 10)) % 360; // Adjust hue
+    s = constrain(s + random(-5, 5), 0, 100); // Adjust saturation
+    b = constrain(b + random(-5, 5), 0, 100); // Adjust brightness
+    
+    color variedColor = color(h, s, b);
+    stroke(variedColor);
+    strokeWeight(random(2, 7));
+    
+    beginShape();
+    for (PVector pt : points) {
+      curveVertex(pt.x, pt.y);
+    }
     endShape();
   }
 }

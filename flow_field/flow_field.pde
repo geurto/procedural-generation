@@ -9,7 +9,7 @@ final int yOff = 0;
 final int spacing = 10;
 final float resolution = 0.005;
 
-final int numLines = 5000;
+final int numLines = 150000;
 
 boolean drawGrid = false;
 
@@ -26,25 +26,29 @@ void createGrid() {
 }
 
 void initializeLines() {
-  img = loadImage("kleuren.png");
   colorMode(HSB, 100);
   for (int i = 0; i < numLines; i++) {
-    int lineLength = (int)random(50, 250);
-    PVector vec = new PVector(random(width), random(height));
-    color c = img.get((int)vec.x, (int)vec.y);
-    flowLines.add(new FlowLine(vec, lineLength, c));
+    int lineLength = (int)random(5, 10);
+    PVector vec = new PVector(random(- width / 4, width * 1.25), random(-height / 4, height * 1.25));
+    flowLines.add(new FlowLine(vec, lineLength));
   }
 }
 
 void setup(){
   size(1800, 900);
+  //blendMode(SCREEN);
   createGrid();
   initializeLines();
 }
 
 void draw() {
   noFill();
-  background(color(0, 0, 100));
+  background(255);
+  
+  // current options: blue-copper-orange | skyline | deep-dea | rainbow
+  img = loadImage("colors/skyline.png");
+  image(img, 0, 0, width, height);
+  
   if (drawGrid) {
     for (int x = 0; x < grid.size(); x++) {
       for (int y = 0; y < grid.get(0).size(); y++) {
@@ -53,7 +57,7 @@ void draw() {
     }
   }
   for (FlowLine l: flowLines) {
-    l.draw();
+    l.draw(img);
   }
   
   noLoop();
