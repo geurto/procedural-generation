@@ -37,7 +37,7 @@ class Drop {
     float u = 1 / pow(2, 1 / c);
     
     for (PVector v : this.vertices) {
-      PVector pb = v.sub(b);
+      PVector pb = v.copy().sub(b);
       PVector normal = m.copy().rotate(HALF_PI);
       float d = abs(pb.dot(normal));
       
